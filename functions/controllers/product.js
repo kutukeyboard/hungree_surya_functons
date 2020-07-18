@@ -45,17 +45,4 @@ router.patch("/:id", verifyToken, async (req, res) => {
 	}
 });
 
-router.delete("/:id", verifyToken, async (req, res) => {
-	try {
-		const product = await db
-			.collection("products")
-			.doc(req.params.id)
-			.set({ isDeleted: true });
-		res.status(200).json({ message: "document flaged as deleted succesfully" });
-	} catch (error) {
-		console.log(error);
-		res.status(500).json(error);
-	}
-});
-
 module.exports = router;
