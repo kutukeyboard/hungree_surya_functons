@@ -1,13 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const { db } = require("../helpers/firebaseAdmin");
+const verifyToken = require("../helpers/verifyToken");
 
-const firebaseConfig = require("../helpers/firebaseConfig");
-
-const firebase = require("firebase");
-firebase.initializeApp(firebaseConfig);
-
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
 	try {
 		const category = await db.collection("productCategories").get();
 		let categories = [];
@@ -20,7 +16,7 @@ router.get("/", async (req, res) => {
 	}
 });
 
-router.post("/", async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
 	try {
 		const category = await db.collection("productCategories").add(req.body);
 		res.status(201).json({ message: "document added succesfully" });
@@ -30,7 +26,7 @@ router.post("/", async (req, res) => {
 	}
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
 	try {
 		const category = await db
 			.collection("productCategories")
@@ -43,7 +39,7 @@ router.put("/:id", async (req, res) => {
 	}
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
 	try {
 		const category = await db
 			.collection("productCategories")
