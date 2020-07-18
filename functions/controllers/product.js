@@ -3,14 +3,20 @@ const router = express.Router();
 const { db } = require("../helpers/firebaseAdmin");
 const verifyToken = require("../helpers/verifyToken");
 
-router.get("/", verifyToken, async (req, res) => {
+router.get("/:id?", verifyToken, async (req, res) => {
+	let product;
 	try {
-		const product = await db.collection("products").get();
-		let products = [];
-		product.forEach((doc) => {
-			products.push(doc.data());
-		});
-		res.json(products);
+		if (req.params.id) {
+			product = await db.collection("products").doc(req.params.id).get();
+			res.json(products.data());
+		} else {
+			product = await db.collection("products").where("").get();
+			let products = [];
+			product.forEach((doc) => {
+				products.push(doc.data());
+			});
+			res.json(products);
+		}
 	} catch (error) {
 		res.status(400).json(error);
 	}
@@ -26,7 +32,7 @@ router.post("/", verifyToken, async (req, res) => {
 	}
 });
 
-router.put("/:id", verifyToken, async (req, res) => {
+router.patch("/:id", verifyToken, async (req, res) => {
 	try {
 		const product = await db
 			.collection("products")
@@ -44,7 +50,7 @@ router.delete("/:id", verifyToken, async (req, res) => {
 		const product = await db
 			.collection("products")
 			.doc(req.params.id)
-			.set(req.body);
+			.set({ isDeleted: true });
 		res.status(200).json({ message: "document flaged as deleted succesfully" });
 	} catch (error) {
 		console.log(error);
