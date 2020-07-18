@@ -8,7 +8,7 @@ router.get("/", verifyToken, async (req, res) => {
 		const product = await db.collection("products").get();
 		let products = [];
 		product.forEach((doc) => {
-			categories.push(doc.data());
+			products.push(doc.data());
 		});
 		res.json(products);
 	} catch (error) {
