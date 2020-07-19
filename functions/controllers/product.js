@@ -8,13 +8,25 @@ router.get("/:id?", verifyToken, async (req, res) => {
 	try {
 		if (req.params.id) {
 			product = await db.collection("products").doc(req.params.id).get();
-			res.json(products.data());
+			res.json(product.data());
 		} else {
-			product = await db.collection("products").where("").get();
+			product = await db
+				.collection("products")
+				.where("isDeleted", "==", false)
+				.get();
+
 			let products = [];
+
 			product.forEach((doc) => {
-				products.push(doc.data());
+				products.push({
+					name: doc.data().name,
+					price: doc.data().price,
+					category: doc.data().category,
+					isDeleted: doc.data().isDeleted,
+					id: doc.id,
+				});
 			});
+
 			res.json(products);
 		}
 	} catch (error) {
